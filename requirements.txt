@@ -1,2 +1,3 @@
-echo "PyYAML" > xsiam-dac-pipeline/requirements.txt
-
+PyYAML
+requests
+pytest
