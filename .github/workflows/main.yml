@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  validate-and-test:
+  validate-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,6 +39,15 @@ jobs:
           echo "🚀 Running XSIAM detection rule validation..."
           python test_rule.py --rule sigma_rules/linux_ssh_bruteforce.yaml --data sample_logs/ssh_test.json
 
+      - name: 🚀 Deploy rule to XSIAM (if tests pass)
+        if: success()
+        env:
+          XSIAM_API_KEY: ${{ secrets.XSIAM_API_KEY }}
+          XSIAM_TENANT_URL: ${{ secrets.XSIAM_TENANT_URL }}
+        run: |
+          echo "🚀 Deploying detection rule to XSIAM..."
+          python deploy_to_xsiam.py --rule sigma_rules/linux_ssh_bruteforce.yaml
+
       - name: ✅ All tests completed
         if: success()
-        run: echo "🎉 All detection rule tests passed successfully!"
+        run: echo "🎉 All detection rule tests passed and deployed successfully!"
