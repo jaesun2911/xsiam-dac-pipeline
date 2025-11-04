@@ -1,28 +1,38 @@
-import os, yaml, requests
+import os
+import requests
+import argparse
+import yaml
 
-XSIAM_API_URL = "https://api-sec-ds-xsiam.xdr.us.paloaltonetworks.com"
-XSIAM_API_KEY = os.getenv("8lQId4zWD9mZ3QP9SVlMSCoRq6xMTjlbhjPpCqT5sA0NRI4Ru7lBwFBzH1T4GwY3pIMR1Nal0sWHBxxr469mI15yWvrBxKPTID6HdxQeCd9tOfVlGI7NWxt0eJwJSouK")  # CI/CD 환경변수에 저장
+def deploy_rule_to_xsiam(rule_file):
+    tenant_url = os.getenv("XSIAM_TENANT_URL")
+    api_key = os.getenv("XSIAM_API_KEY")
 
-def deploy_rule(filepath):
-    with open(filepath, "r", encoding="utf-8") as f:
-        rule = yaml.safe_load(f)
+    if not tenant_url or not api_key:
+        raise EnvironmentError("❌ XSIAM_TENANT_URL or XSIAM_API_KEY not set in environment variables")
+
+    with open(rule_file, "r") as f:
+        rule_data = yaml.safe_load(f)
 
     headers = {
-        "Authorization": f"Bearer {XSIAM_API_KEY}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
 
-    print(f"🚀 Deploying rule: {rule['name']}")
-    res = requests.post(XSIAM_API_URL, headers=headers, json=rule)
+    # 예시 URL: XSIAM API (Detection Rules endpoint)
+    url = f"{tenant_url}/public_api/v1/xql/detection/rules"
 
-    if res.status_code in (200, 201):
-        print(f"✅ Successfully deployed {rule['name']}")
+    response = requests.post(url, headers=headers, json=rule_data)
+
+    if response.status_code == 200:
+        print("✅ Successfully deployed rule to XSIAM!")
     else:
-        print(f"❌ Failed to deploy {rule['name']}: {res.status_code} {res.text}")
-
+        print(f"❌ Failed to deploy rule. Status: {response.status_code}")
+        print(response.text)
+        response.raise_for_status()
 
 if __name__ == "__main__":
-    for root, _, files in os.walk("detections"):
-        for file in files:
-            if file.endswith(".yaml"):
-                deploy_rule(os.path.join(root, file))
+    parser = argparse.ArgumentParser(description="Deploy detection rule to XSIAM")
+    parser.add_argument("--rule", required=True, help="Path to detection rule YAML")
+    args = parser.parse_args()
+
+    deploy_rule_to_xsiam(args.rule)
