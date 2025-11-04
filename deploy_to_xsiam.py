@@ -1,7 +1,7 @@
 import os, yaml, requests
 
-XSIAM_API_URL = "https://api-yourtenant.xsiam.paloaltonetworks.com/public_api/v1/detection_rules"
-XSIAM_API_KEY = os.getenv("XSIAM_API_KEY")  # CI/CD 환경변수에 저장
+XSIAM_API_URL = "https://api-sec-ds-xsiam.xdr.us.paloaltonetworks.com"
+XSIAM_API_KEY = os.getenv("8lQId4zWD9mZ3QP9SVlMSCoRq6xMTjlbhjPpCqT5sA0NRI4Ru7lBwFBzH1T4GwY3pIMR1Nal0sWHBxxr469mI15yWvrBxKPTID6HdxQeCd9tOfVlGI7NWxt0eJwJSouK")  # CI/CD 환경변수에 저장
 
 def deploy_rule(filepath):
     with open(filepath, "r", encoding="utf-8") as f:
