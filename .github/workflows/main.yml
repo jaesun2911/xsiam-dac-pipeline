@@ -1,0 +1,44 @@
+name: XSIAM Detection-as-Code CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧱 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧪 Validate detection rule YAML
+        run: |
+          echo "🚀 Running XSIAM detection rule validation..."
+          python validate_yaml.py sigma_rules/linux_ssh_bruteforce.yaml
+
+      - name: 🧰 Create sample log data (for testing)
+        run: |
+          mkdir -p sample_logs
+          echo '[{"user": "admin", "action": "failed"}, {"user": "admin", "action": "failed"}, {"user": "admin", "action": "failed"}, {"user": "admin", "action": "failed"}, {"user": "admin", "action": "failed"}, {"user": "admin", "action": "failed"}, {"user": "admin", "action": "success"}]' > sample_logs/ssh_test.json
+
+      - name: 🔍 Run detection rule test
+        run: |
+          echo "🚀 Running XSIAM detection rule validation..."
+          python test_rule.py sigma_rules/linux_ssh_bruteforce.yaml sample_logs/ssh_test.json
+
+      - name: ✅ All tests completed
+        if: success()
+        run: echo "🎉 All detection rule tests passed successfully!"
