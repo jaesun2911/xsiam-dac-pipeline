@@ -1,0 +1,13 @@
+id: rule_ssh_bruteforce
+name: SSH Brute Force Detection
+description: Detects multiple failed SSH logins from same IP
+severity: high
+enabled: true
+query: >
+  dataset = xdr_data
+  | filter event_type == "ssh" and action == "failed"
+  | group by src_ip
+  | filter count() > 5
+tags:
+  - MITRE.T1110
+  - brute_force

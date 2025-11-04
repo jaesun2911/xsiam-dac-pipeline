@@ -1,0 +1,30 @@
+stages:
+  - convert
+  - validate
+  - test
+  - deploy
+
+convert_sigma:
+  stage: convert
+  script:
+    - python3 convert_sigma_to_xql.py
+  artifacts:
+    paths:
+      - detections_xql/
+
+validate_rules:
+  stage: validate
+  script:
+    - python3 validate_yaml.py
+
+test_rules:
+  stage: test
+  script:
+    - python3 test_rule.py --rule detections_xql/linux_ssh_bruteforce.yaml --data sample_logs/ssh_test.json
+
+deploy_rules:
+  stage: deploy
+  script:
+    - python3 deploy_to_xsiam.py
+  only:
+    - main
