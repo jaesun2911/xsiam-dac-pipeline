@@ -1,0 +1,9 @@
+[
+  {"user": "admin", "action": "failed"},
+  {"user": "admin", "action": "failed"},
+  {"user": "admin", "action": "failed"},
+  {"user": "admin", "action": "failed"},
+  {"user": "admin", "action": "failed"},
+  {"user": "admin", "action": "failed"},
+  {"user": "admin", "action": "success"}
+]
