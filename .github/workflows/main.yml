@@ -26,7 +26,7 @@ jobs:
 
       - name: 🧪 Validate detection rule YAML
         run: |
-          echo "🚀 Running XSIAM detection rule validation..."
+          echo "🚀 Validating detection rule YAML..."
           python validate_yaml.py sigma_rules/linux_ssh_bruteforce.yaml
 
       - name: 🧰 Create sample log data (for testing)
@@ -37,7 +37,7 @@ jobs:
       - name: 🔍 Run detection rule test
         run: |
           echo "🚀 Running XSIAM detection rule validation..."
-          python test_rule.py sigma_rules/linux_ssh_bruteforce.yaml sample_logs/ssh_test.json
+          python test_rule.py --rule sigma_rules/linux_ssh_bruteforce.yaml --data sample_logs/ssh_test.json
 
       - name: ✅ All tests completed
         if: success()
